@@ -13,10 +13,12 @@
             <ColumnDefinition Width="139*"/>
         </Grid.ColumnDefinitions>
         <StackPanel Height="60" VerticalAlignment="Top" Orientation="Horizontal">
-            <Button  VerticalAlignment="Center" Height="25" Width="25" Click="ChangeDirectory"></Button>
-            <Button  VerticalAlignment="Center" Height="25" Width="25"></Button>
+            <Button VerticalAlignment="Center" Height="25" Margin="10 10 50 10" Width="25" Click="ChangeDirectory"></Button>
+            <Button Tag="0" Click="FilterFiles" VerticalAlignment="Center" HorizontalAlignment="Right" Height="25" Width="100" Margin="0 0 32 0" FontSize="18">update</Button>
+            <Button Tag="2" Click="FilterFiles" VerticalAlignment="Center" HorizontalAlignment="Right" Height="25" Width="100" Margin="0 0 32 0" FontSize="18">bin</Button>
+            <Button Tag="1" Click="FilterFiles" VerticalAlignment="Center" HorizontalAlignment="Right" Height="25" Width="100" FontSize="18">obj</Button>
         </StackPanel>
-        <ListView VerticalAlignment="Bottom" Height="559" x:Name="files" HorizontalAlignment="Stretch"  MouseDoubleClick="listView_select">
+        <ListView VerticalAlignment="Bottom" Height="559" x:Name="files" HorizontalAlignment="Stretch"  MouseLeftButtonUp="listView_select">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <WrapPanel>

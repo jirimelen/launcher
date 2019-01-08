@@ -19,42 +19,19 @@ namespace WpfApp4
         // use FileFilter enum update / obj / bin
         public List<FileInfo> GetProjects(string Path)
         {
+            projectFiles = new List<FileInfo>();
             foreach (string dirPath in Directory.GetFiles(Path, "*.csproj", SearchOption.AllDirectories))
             {
                 FileInfo infoNew = new FileInfo(dirPath);
-                Boolean Equals = false;
-                Boolean Newer = false;
-                // check if already in list
-                foreach (var item in projectFiles)
-                {
-                    if (item.Name.Equals(infoNew.Name)) Equals = true;
-                    if (Equals)
-                    {
-                        if (DateTime.Compare(infoNew.LastWriteTime, item.LastWriteTime) > 0)
-                        {
-                            Newer = true;
-                            projectFiles.Remove(item);
-                            break;
-                        }
-                    }
-                }
-                // display the newer one 
-                if (Equals && Newer)
-                {
-                    projectFiles.Add(infoNew);
-                }
-                else if (!Equals)
-                {
-                    projectFiles.Add(infoNew);
-                }
+                projectFiles.Add(infoNew);
             }
 
             return projectFiles;
         }
 
-        public List<FileInfo> GetExes(string Path)
+        public List<FileInfo> GetExes(string Path, FileFilter filter = FileFilter.update)
         {
-            exeFiles.Clear();
+            exeFiles = new List<FileInfo>();
             foreach (FileInfo project in GetProjects(Path))
             {
                 foreach (string dirPath in Directory.GetFiles(project.Directory.FullName, "*.exe", SearchOption.AllDirectories))
@@ -76,14 +53,35 @@ namespace WpfApp4
                             }
                         }
                     }
-                    // display the newer one 
-                    if (Equals && Newer)
+                    
+
+                    switch (filter)
                     {
-                        exeFiles.Add(infoNew);
-                    }
-                    else if (!Equals)
-                    {
-                        exeFiles.Add(infoNew);
+                        case FileFilter.update:
+                            // display the newer one 
+                            if (Equals && Newer)
+                            {
+                                exeFiles.Add(infoNew);
+                            }
+                            else if (!Equals)
+                            {
+                                exeFiles.Add(infoNew);
+                            }
+                            break;
+                        case FileFilter.fromObj:
+                            if (infoNew.FullName.Contains("\\obj\\"))
+                            {
+                                exeFiles.Add(infoNew);
+                            }
+                            break;
+                        case FileFilter.fromBin:
+                            if (infoNew.FullName.Contains("\\bin\\"))
+                            {
+                                exeFiles.Add(infoNew);
+                            }
+                            break;
+                        default:
+                            break;
                     }
                 }
             }

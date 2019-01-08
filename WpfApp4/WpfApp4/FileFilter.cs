@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WpfApp4
 {
-    enum FileFilter
+    public enum FileFilter
     {
         update,
         fromObj,

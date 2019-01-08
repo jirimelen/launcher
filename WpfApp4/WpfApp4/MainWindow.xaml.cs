@@ -23,6 +23,7 @@ namespace WpfApp4
     public partial class MainWindow : Window
 
     { 
+        public static 
         //List<TextBlock> Items = new List<TextBlock>();
         //List<string> usedNames = new List<string>();
         List<FileInfo> ItemsInfo = new List<FileInfo>();
@@ -30,6 +31,7 @@ namespace WpfApp4
 
         string selectedPath = new PathSelection().GetPath("Select folder with projects");
         private ItemsManager itemsManager = new ItemsManager();
+        private ProjectsManager projectsManager = new ProjectsManager();
 
         public MainWindow()
         {
@@ -39,12 +41,18 @@ namespace WpfApp4
             
         }
 
-        public void DisplayFiles()
+        public void DisplayFiles(FileFilter filter = FileFilter.update)
         {
-            ItemsInfo = new List<FileInfo>();
-            ItemsInfo = itemsManager.GetExes(selectedPath);
+            //ItemsInfo = new List<FileInfo>();
+            ItemsInfo = itemsManager.GetExes(selectedPath, filter);
             
             files.ItemsSource = ItemsInfo;
+        }
+
+        public void FilterFiles(object sender, EventArgs e)
+        {
+            FileFilter filter = (FileFilter)int.Parse(((Button)sender).Tag.ToString());
+            DisplayFiles(filter);
         }
 
         public void RunFile(object sender, RoutedEventArgs e)
@@ -63,7 +71,10 @@ namespace WpfApp4
 
         private void listView_select(object sender, EventArgs e)
         {
-            UpdateInfo((FileInfo)(sender as ListView).SelectedItems[0]);
+            if ((sender as ListView).SelectedItems.Count != 0)
+            {
+                UpdateInfo((FileInfo)(sender as ListView).SelectedItems[0]);
+            }
         }
 
         public void UpdateInfo(FileInfo info)
@@ -71,6 +82,8 @@ namespace WpfApp4
             fileOptions.Children.Clear();
             TextBlock child;
             Button childButton = new Button();
+            Button childButton1 = new Button();
+            Button childButton2 = new Button();
 
             child = new TextBlock();
             child.Text = "path:";
@@ -91,11 +104,31 @@ namespace WpfApp4
             childButton.Content = "run";
             childButton.Click += RunFile;
             fileOptions.Children.Add(childButton);
+
+            childButton1.Content = "delete";
+            childButton1.Click += DeleteProject;
+            fileOptions.Children.Add(childButton1);
+            
+            childButton2.Content = "relocate";
+            childButton2.Click += RelocateProject;
+            fileOptions.Children.Add(childButton2);
         }
 
         private void ChangeDirectory(object sender, RoutedEventArgs e)
         {
             selectedPath = new PathSelection().GetPath("Select folder with projects");
+            DisplayFiles();
+        }
+
+        private void RelocateProject(object sender, RoutedEventArgs e)
+        {
+            projectsManager.ChangeDir(activePath, new PathSelection().GetPath("Select folder with projects"));
+            DisplayFiles();
+        }
+
+        private void DeleteProject(object sender, RoutedEventArgs e)
+        {
+            projectsManager.DeleteProject(activePath);
             DisplayFiles();
         }
     }
